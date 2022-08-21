@@ -1,0 +1,28 @@
+#!/bash
+
+[[ ${BPAN_ROOT-} ]] || {
+  (
+    echo "Tests require BPAN to be installed."
+    echo "See https://github.com/bpan-org/bpan"
+  ) >&2
+  exit 1
+}
+
+source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
+
+bpan:use test-more
+
+spec1="\
+  foo <options...>
+
+See 'man foo' for more help.
+
+Options:
+--
+ 
+b,bar       Bar bar bar
+q,quux=     Quux quux
+ 
+xxx         Xxx xxx
+yyy=        Yyy yyy
+"
