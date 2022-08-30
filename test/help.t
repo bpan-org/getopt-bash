@@ -17,11 +17,15 @@ usage:   foo <options...>
     --xxx                 Xxx xxx
     --yyy ...             Yyy yyy"
 
-got=$(getopt <<<"$spec1")
+spec=$(< test/spec1.txt)
+
+got=$(getopt <<<"$spec")
 is "$got" "$want" "'getopt' help output is correct"
-got=$(getopt -h <<<"$spec1")
+
+got=$(getopt -h <<<"$spec")
 is "$got" "$want" "'getopt -h' help output is correct"
-got=$(getopt --help <<<"$spec1")
+
+got=$(getopt --help <<<"$spec")
 is "$got" "$want" "'getopt --help' help output is correct"
 
 done-testing 3

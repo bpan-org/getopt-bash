@@ -9,12 +9,10 @@ Declarative getopt (long) parser
 ```bash
 #!/bin/bash
 
-app=$(basename $0)
-
 source getopt.bash "\
-$app <options...> <arguents...>
+my-app <options...> <arguents...>
 
-See 'man $app' for more help.
+See 'man my-app' for more help.
 
 Options:
 --
@@ -25,7 +23,7 @@ xxx         Xxx xxx
 yyy=        Yyy yyy
 
 help        Show help
-version     Print $app version
+version     Print my-app version
 "
 
 getopt "$@"

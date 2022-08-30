@@ -10,19 +10,6 @@
 
 source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
 
+export PATH=$PWD/lib:$PATH
+
 bpan:use test-more
-
-spec1="\
-  foo <options...>
-
-See 'man foo' for more help.
-
-Options:
---
- 
-b,bar       Bar bar bar
-q,quux=     Quux quux
- 
-xxx         Xxx xxx
-yyy=        Yyy yyy
-"
