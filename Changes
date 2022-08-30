@@ -1,3 +1,7 @@
+[version "0.1.1"]
+date = Tue 30 Aug 2022 07:30:57 AM PDT
+done = Preserve blank lines in options usage output
+
 [version "0.1.0"]
-  date = Tue 16 Aug 2022 09:22:29 AM PDT
-  done = Initial release
+date = Tue 16 Aug 2022 09:22:29 AM PDT
+done = Initial release
