@@ -13,3 +13,32 @@ source "$BPAN_ROOT/.bpan/lib/bpan.bash" --prelude
 export PATH=$PWD/lib:$PATH
 
 bpan:use test-more
+
+try() {
+  cmd="$*"
+  set --
+  set +e
+  got=$(eval "$cmd" 2>&1)
+  set -e
+}
+
+has() {
+  local got=$1
+  local want=$2
+  local label=${3-}
+  local n=$'\n'
+
+  label=${label/\%want/${want//$n/|}}
+
+  if [[ $got == *"$want"* ]]; then
+    pass "$label"
+  else
+    fail "$label"
+    if [[ $got == *"$n"* ]]; then
+      got="'$n$got$n'"
+    else
+      got="'$got'"
+    fi
+    diag "Text '$want' not found in: $got"
+  fi
+}

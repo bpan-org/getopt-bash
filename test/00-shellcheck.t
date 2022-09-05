@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$BPAN_ROOT/test/init"
+source test/init
 
 check-command-version shellcheck 0.8.0 ||
   plan skip-all "Test requires shellcheck 0.8.0+ to be installed"

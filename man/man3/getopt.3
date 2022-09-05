@@ -133,20 +133,22 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "getopt" 3 "2022-08-30" "md2man v0.1.0" "Bash Package Manager"
+.TH "getopt" 3 "2022-09-05" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
 .nh
 .SH "GETOPT-BASH"
 .IX Header "GETOPT-BASH"
-Declarative getopt (long) parser
+Declarative Getopt Parser for Bash
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
 .Vb 1
 \&    #!/bin/bash
 \&
 \&    source getopt.bash "\e
+\&    getopt_default=(\-\-help)
+\&
 \&    my\-app <options...> <arguents...>
 \&
 \&    See \*(Aqman my\-app\*(Aq for more help.
@@ -168,8 +170,8 @@ Declarative getopt (long) parser
 \&
 \&    if $option_bar || $option_xxx; then
 \&      echo \*(AqOptions:\*(Aq
-\&      echo "quux = ${option_quux\-}"
-\&      echo "yyy = ${option_yyy\-}"
+\&      echo "quux = $option_quux"
+\&      echo "yyy = $option_yyy"
 \&      echo \*(AqArguments:\*(Aq
 \&      printf "\- %s\en" "$@"
 \&    fi
@@ -179,19 +181,19 @@ Declarative getopt (long) parser
 Git has a little known, but very cool getopt parser built in. The Git command is:
 .PP
 .Vb 2
-\&    git rev\-parse \-\-parseopt <command\-line\-args> \e
+\&    git rev\-parse \-\-parseopt \-\- <command\-line\-args> \e
 \&      <<<"<special\-format\-getopt\-spec\-text>"
 .Ve
 .PP
 You pipe in a special format that looks like a help text describing the command. If you ask for \f(CW\*(C`\-\-help\*(C'\fR (or the parser fails to parse the options), it actually will print a slightly reformatted version of that spec.
 .PP
-This library makes the Git facility even more powerful and easy to use.
+This library makes that Git parser even more powerful and easy to use.
 .SH "PARLANCE"
 .IX Header "PARLANCE"
 .IP "\(bu" 4
 options (or opts)
 .Sp
-Options are the parameters like \f(CW\*(C`\-h\*(C'\fR, \f(CW\*(C`\-\-help\*(C'\fR, \f(CW\*(C`\-f <file\*(C'\fR>, \f(CW\*(C`\-\-file <file\*(C'\fR> or \f(CW\*(C`\-\-file=<file\*(C'\fR. Note that option names are case insensitive. ie >\-f\f(CW\*(C`and\*(C'\fR\-F` are diffent options.
+Options are the parameters like \f(CW\*(C`\-h\*(C'\fR, \f(CW\*(C`\-\-help\*(C'\fR, \f(CW\*(C`\-f <file\*(C'\fR>, \f(CW\*(C`\-\-file <file\*(C'\fR> or \f(CW\*(C`\-\-file=<file\*(C'\fR. Note that option names are case sensitive. ie >\-f\f(CW\*(C`and\*(C'\fR\-F` are diffent options.
 .IP "\(bu" 4
 arguments (or args)
 .Sp
@@ -218,72 +220,70 @@ dual option
 A dual option can be used alone like a flag option, or with a value.
 .SH "USAGE"
 .IX Header "USAGE"
-The \f(CW\*(C`getopt\-bash\*(C'\fR library provides a single file \f(CW\*(C`lib/getopt.bash\*(C'\fR. If you \f(CW\*(C`source getopt.bash\*(C'\fR it provides a single function \f(CW\*(C`getopt\*(C'\fR. The \f(CW\*(C`getopt\*(C'\fR function expects a specially formatted spec string in its \s-1STDIN\s0 and the arguments you want to parse, passed in as arguments to the function.
+The \f(CW\*(C`getopt\-bash\*(C'\fR library provides a single file \f(CW\*(C`lib/getopt.bash\*(C'\fR. If you \f(CW\*(C`source getopt.bash\*(C'\fR it provides a function called \f(CW\*(C`getopt\*(C'\fR. The \f(CW\*(C`getopt\*(C'\fR function expects a specially formatted spec string in its \s-1STDIN\s0 and the arguments you want to parse, passed in as arguments to the function.
 .PP
-It also checks for a special array variable called \f(CW\*(C`getopt\*(C'\fR (yes, you can have a variable and a function with the same name in Bash) that contains a number of configuration option pairs (descibed below).
+The \f(CW\*(C`getopt\*(C'\fR function will (by default) set each option in a variable called \f(CW\*(C`option_<option\-name\*(C'\fR> and put any arguments into an array variable called \f(CW\*(C`args\*(C'\fR.
 .PP
-The function will (by default) set each option in a variable called \f(CW\*(C`option_<option\-name\*(C'\fR> and will print any arguments to stdout.
+The declared option variables will default to \f(CW\*(C`false\*(C'\fR for flag options and \f(CW\*(Aq\*(Aq\fR for value options. Actually the default for a value option is an empty array, but when used in a scalar context it will return the first value or \f(CW\*(Aq\*(Aq\fR if the array is empty.
 .PP
-\&\f(CW\*(C`_\*(C'\fR
+If a value option is specified multiple times, the option variable will be an array with all the values in the order they were used.
+.PP
+The variable \f(CW\*(C`option_count_<name\*(C'\fR> will be set to the number of times that option was used.
+.PP
+If a flag option is specified multiple times, the value will be \f(CW\*(C`true\*(C'\fR. If a dual option is specified multiple times, the first value will be used. The \f(CW\*(C`option_count_<name\*(C'\fR> variable will still be accurate though.
 .PP
 Here's an example:
 .PP
-.Vb 7
-\&    getopt=(
-\&      default\-args  \-\-help
-\&      debug\-opt     DEBUG
-\&      args\-var      my_args
-\&    )
-\&    getopt "$@" <<<"$spec_string"
-\&    echo "The \*(Aq\-\-foo\*(Aq option is \*(Aq$option_foo\*(Aq and the args are \*(Aq${my_args[*]}\*(Aq"
+.Vb 5
+\&    getopt_default=\-\-help \e
+\&      getopt "$@" <<<"$spec_string"
+\&    echo "The \*(Aq\-\-foo=\*(Aq option is \*(Aq$option_foo\*(Aq"
+\&    echo "The \*(Aq\-\-bar\*(Aq option was used $option_count_bar times.
+\&    echo "The remaining arguments are \*(Aq${args[*]}\*(Aq"
 .Ve
 .PP
 \&\s-1NOTE:\s0 Bash has a builtin \f(CW\*(C`getopt\*(C'\fR command that doesn't do nearly as much. If you need to use the builtin in combination with this library, just use this command: \f(CW\*(C`builtin getopt ...\*(C'\fR for the builtin version.
 .SS "\s-1THE GETOPT SPEC STRING FORMAT\s0"
 .IX Subsection "THE GETOPT SPEC STRING FORMAT"
-To get good at using getopt-bash you should run \f(CW\*(C`git help rev\-parse\*(C'\fR search for \f(CW\*(C`^PARSEOPT\*(C'\fR and read that entire section. The getopt-bash function uses \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR under the hood, but does a bunch of extra pre-processing and post-processing to make things really nice and simple.
+To get good at using getopt-bash you should run \f(CW\*(C`git help rev\-parse\*(C'\fR, search for \f(CW\*(C`^PARSEOPT\*(C'\fR and read that entire section. The getopt-bash function uses \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR under the hood, but does a bunch of extra pre-processing and post-processing to make things really nice and simple.
 .PP
 The options section of the spec has these various combinations:
 .PP
 .Vb 5
-\&    The options with \`string\` and \`number\` are enforced by getopt\-bash
+\&    The options with \`str\` and \`num\` are enforced by getopt\-bash
 \&    \-\-
 \&    f,file=         Description of a value option (both short and long)
 \&    help            Description of a flag option (long only)
 \&    Q?              Description of a dual option (short only)
 \&
-\&    color=string    Value must be a string
-\&    verbose?number  Value (if present) must be a number
+\&    color=str       Value must be a string
+\&    verbose?num     Value (if present) must be a number
 .Ve
 .PP
-The getopt-bash library adds some additional features to the spec options syntax:
+The getopt-bash library adds additional features to the spec options syntax:
 .PP
-.Vb 4
+.Vb 2
 \&    input=+         This option is required
-\&    size=+number    Required and must be number
-\&    style=@         May be used more than once
-\&    color=+@string  Required, 1 or more times, must be string
+\&    size=+num       Required and must be a number
 .Ve
 .PP
-In \f(CW\*(C`git rev\-parse\*(C'\fR, there are 4 flag characters: '* = ? !`. The getopt-bash library adds:
+In \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR there are 4 flag characters: '* = ? !`. The getopt-bash library adds:
 .IP "\(bu" 4
 \&\f(CW\*(C`+\*(C'\fR
 .Sp
 Option is required. This only makes sense for value options.
-.IP "\(bu" 4
-\&\f(CW\*(C`@\*(C'\fR
-.Sp
-Option may be specified multiple times. The getopt function puts the results in a Bash array variable.
 .PP
-In \f(CW\*(C`git rev\-parse\*(C'\fR you can specify a hint word to indicate in the help text what type of value (number, string, etc) is expected for a value option. The hint is not enforced.
+In \f(CW\*(C`git rev\-parse\*(C'\fR you can specify a hint word to indicate in the help text what type of value (\f(CW\*(C`num\*(C'\fR, \f(CW\*(C`str\*(C'\fR, etc) is expected for a value option.
+.PP
+Some hints are enforced and some are suggestions.
 .PP
 By default, getopt-bash will enforce the following hints:
 .IP "\(bu" 4
-\&\f(CW\*(C`string\*(C'\fR or \f(CW\*(C`str\*(C'\fR
+\&\f(CW\*(C`str\*(C'\fR
 .Sp
 Value should be a string.
 .IP "\(bu" 4
-\&\f(CW\*(C`number\*(C'\fR or \f(CW\*(C`num\*(C'\fR or \f(CW\*(C`int\*(C'\fR
+\&\f(CW\*(C`num\*(C'\fR
 .Sp
 Value should be a number.
 .IP "\(bu" 4
@@ -302,14 +302,41 @@ Value should be a directory the exists.
 \&\f(CW\*(C`path\*(C'\fR
 .Sp
 Value should be the path of a file or directory that exists.
+.IP "\(bu" 4
+\&\f(CW\*(C`yyyy\-mm\-dd_HH:MM:SS\*(C'\fR
+.Sp
+Dates and times can be specified in any layout containing the strings: \f(CW\*(C`yyyy\*(C'\fR, \f(CW\*(C`yy\*(C'\fR, \f(CW\*(C`mm\*(C'\fR, \f(CW\*(C`dd\*(C'\fR, \f(CW\*(C`HH\*(C'\fR, \f(CW\*(C`MM\*(C'\fR, \f(CW\*(C`SS\*(C'\fR. Underscores are used for space characters. All other characters represent themselves.
+.IP "\(bu" 4
+\&\f(CW\*(C`/.../\*(C'\fR
+.Sp
+A hint enclosed in slash characters is a Bash regex to match.
 .SS "\s-1CONFIGURATION\s0"
 .IX Subsection "CONFIGURATION"
-The \f(CW\*(C`getopt\*(C'\fR function has sensible defaults but it is also highly configurable.
+The \f(CW\*(C`getopt\*(C'\fR function has sensible defaults but it is also highly configurable. There are a number of \f(CW\*(C`getopt_...\*(C'\fR variables you can use. These variables can be set directly or by adding lines like:
+.PP
+.Vb 2
+\&    getopt_default=(\-\-help)
+\&    getopt_args=my_args
+.Ve
+.PP
+to the beginning of your spec text.
+.PP
+The currently available option variables are:
 .IP "\(bu" 4
-\&\f(CW\*(C`opts\-pre\*(C'\fR
+\&\f(CW\*(C`getopt_default=...\*(C'\fR (default is \f(CW\*(Aq\*(Aq\fR)
+.Sp
+If no arguments were used, then use these. Multiple default arguments can be specified as an array: \f(CW\*(C`getopt_default=(\-\-foo \-\-bar)\*(C'\fR. This option is most commonly set to \f(CW\*(C`getopt_default=\-\-help\*(C'\fR (when appropriate).
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_prefix=...\*(C'\fR (default is \f(CW\*(C`option_\*(C'\fR)
+.Sp
+The prefix for the getopt option variables where values are stored.
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_args=...\*(C'\fR (default is `args)
+.Sp
+Name of the array variable to store the arguments found.
 .SH "LICENSE AND COPYRIGHT"
 .IX Header "LICENSE AND COPYRIGHT"
-Copyright 2020\-2021. Ingy do\*:t Net ingy@ingy.net <mailto:ingy@ingy.net>.
+Copyright 2020\-2022. Ingy do\*:t Net ingy@ingy.net <mailto:ingy@ingy.net>.
 .PP
 getopt-bash is released under the \s-1MIT\s0 license.
 .PP

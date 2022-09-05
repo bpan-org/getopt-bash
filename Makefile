@@ -3,13 +3,14 @@ SHELL := bash
 test ?= test
 o ?=
 
-default:
+BPAN_CMDS := $(shell bpan cmds -q | grep -v test)
 
-BPAN_CMDS := $(shell bpan -q cmds | grep -v test)
+default:
+	@printf '%s\n' $(BPAN_CMDS)
 
 .PHONY: test
 test:
 	prove -v $(test)
 
-$(BPAN_CMDS)::
+$(BPAN_CMDS):
 	bpan $@ $o

@@ -1,7 +1,7 @@
 getopt-bash
 ===========
 
-Declarative getopt (long) parser
+Declarative Getopt Parser for Bash
 
 
 # Synopsis
@@ -10,6 +10,8 @@ Declarative getopt (long) parser
 #!/bin/bash
 
 source getopt.bash "\
+getopt_default=(--help)
+
 my-app <options...> <arguents...>
 
 See 'man my-app' for more help.
@@ -31,8 +33,8 @@ set -- "${args[@]}"
 
 if $option_bar || $option_xxx; then
   echo 'Options:'
-  echo "quux = ${option_quux-}"
-  echo "yyy = ${option_yyy-}"
+  echo "quux = $option_quux"
+  echo "yyy = $option_yyy"
   echo 'Arguments:'
   printf "- %s\n" "$@"
 fi
@@ -44,7 +46,7 @@ fi
 Git has a little known, but very cool getopt parser built in.
 The Git command is:
 ```bash
-git rev-parse --parseopt <command-line-args> \
+git rev-parse --parseopt -- <command-line-args> \
   <<<"<special-format-getopt-spec-text>"
 ```
 
@@ -53,7 +55,8 @@ command.
 If you ask for `--help` (or the parser fails to parse the options), it actually
 will print a slightly reformatted version of that spec.
 
-This library makes the Git facility even more powerful and easy to use.
+This library makes that Git parser even more powerful and easy to use.
+
 
 # Parlance
 
@@ -61,7 +64,7 @@ This library makes the Git facility even more powerful and easy to use.
 
   Options are the parameters like `-h`, `--help`, `-f <file>`, `--file <file>`
   or `--file=<file>.
-  Note that option names are case insensitive.
+  Note that option names are case sensitive.
   ie `-f` and `-F` are diffent options.
 
 * arguments (or args)
@@ -101,64 +104,70 @@ This library makes the Git facility even more powerful and easy to use.
 # Usage
 
 The `getopt-bash` library provides a single file `lib/getopt.bash`.
-If you `source getopt.bash` it provides a single function `getopt`.
+If you `source getopt.bash` it provides a function called `getopt`.
 The `getopt` function expects a specially formatted spec string in its STDIN
 and the arguments you want to parse, passed in as arguments to the function.
 
-It also checks for a special array variable called `getopt` (yes, you can have
-a variable and a function with the same name in Bash) that contains a number of
-configuration option pairs (descibed below).
+The `getopt` function will (by default) set each option in a variable called
+`option_<option-name>` and put any arguments into an array variable called
+`args`.
 
-The function will (by default) set each option in a variable called
-`option_<option-name>` and will print any arguments to stdout.
+The declared option variables will default to `false` for flag options and `''`
+for value options.
+Actually the default for a value option is an empty array, but when used in a
+scalar context it will return the first value or `''` if the array is empty.
 
-`_`
+If a value option is specified multiple times, the option variable will be an
+array with all the values in the order they were used.
+
+The variable `option_count_<name>` will be set to the number of times that
+option was used.
+
+If a flag option is specified multiple times, the value will be `true`.
+If a dual option is specified multiple times, the first value will be used.
+The `option_count_<name>` variable will still be accurate though.
 
 Here's an example:
 ```bash
-getopt=(
-  default-args  --help
-  debug-opt     DEBUG
-  args-var      my_args
-)
-getopt "$@" <<<"$spec_string"
-echo "The '--foo' option is '$option_foo' and the args are '${my_args[*]}'"
+getopt_default=--help \
+  getopt "$@" <<<"$spec_string"
+echo "The '--foo=' option is '$option_foo'"
+echo "The '--bar' option was used $option_count_bar times.
+echo "The remaining arguments are '${args[*]}'"
 ```
 
 NOTE: Bash has a builtin `getopt` command that doesn't do nearly as much.
 If you need to use the builtin in combination with this library, just use this
 command: `builtin getopt ...` for the builtin version.
 
+
 ## The getopt Spec String Format
 
-To get good at using getopt-bash you should run `git help rev-parse` search for
-`^PARSEOPT` and read that entire section.
+To get good at using getopt-bash you should run `git help rev-parse`, search
+for `^PARSEOPT` and read that entire section.
 The getopt-bash function uses `git rev-parse --parseopt` under the hood, but
 does a bunch of extra pre-processing and post-processing to make things really
 nice and simple.
 
 The options section of the spec has these various combinations:
 ```
-The options with `string` and `number` are enforced by getopt-bash
+The options with `str` and `num` are enforced by getopt-bash
 --
 f,file=         Description of a value option (both short and long)
 help            Description of a flag option (long only)
 Q?              Description of a dual option (short only)
 
-color=string    Value must be a string
-verbose?number  Value (if present) must be a number
+color=str       Value must be a string
+verbose?num     Value (if present) must be a number
 ```
 
-The getopt-bash library adds some additional features to the spec options
-syntax:
+The getopt-bash library adds additional features to the spec options syntax:
 ```
 input=+         This option is required
-size=+number    Required and must be number
-style=@         May be used more than once
-color=+@string  Required, 1 or more times, must be string
+size=+num       Required and must be a number
 ```
 
-In `git rev-parse`, there are 4 flag characters: '* = ? !`.
+In `git rev-parse --parseopt` there are 4 flag characters: '* = ? !`.
 The getopt-bash library adds:
 
 * `+`
@@ -166,22 +175,18 @@ The getopt-bash library adds:
   Option is required.
   This only makes sense for value options.
 
-* `@`
-
-  Option may be specified multiple times.
-  The getopt function puts the results in a Bash array variable.
-
 In `git rev-parse` you can specify a hint word to indicate in the help text
-what type of value (number, string, etc) is expected for a value option.
-The hint is not enforced.
+what type of value (`num`, `str`, etc) is expected for a value option.
+
+Some hints are enforced and some are suggestions.
 
 By default, getopt-bash will enforce the following hints:
 
-* `string` or `str`
+* `str`
 
   Value should be a string.
 
-* `number` or `num` or `int`
+* `num`
 
   Value should be a number.
 
@@ -201,17 +206,53 @@ By default, getopt-bash will enforce the following hints:
 
   Value should be the path of a file or directory that exists.
 
+* `yyyy-mm-dd_HH:MM:SS`
+
+  Dates and times can be specified in any layout containing the strings:
+  `yyyy`, `yy`, `mm`, `dd`, `HH`, `MM`, `SS`.
+  Underscores are used for space characters.
+  All other characters represent themselves.
+
+* `/.../`
+
+  A hint enclosed in slash characters is a Bash regex to match.
+
 
 ## Configuration
 
 The `getopt` function has sensible defaults but it is also highly configurable.
+There are a number of `getopt_...` variables you can use.
+These variables can be set directly or by adding lines like:
 
-* `opts-pre`
+```
+getopt_default=(--help)
+getopt_args=my_args
+```
+
+to the beginning of your spec text.
+
+The currently available option variables are:
+
+* `getopt_default=...` (default is `''`)
+
+  If no arguments were used, then use these.
+  Multiple default arguments can be specified as an array:
+  `getopt_default=(--foo --bar)`.
+  This option is most commonly set to `getopt_default=--help` (when
+  appropriate).
+
+* `getopt_prefix=...` (default is `option_`)
+
+  The prefix for the getopt option variables where values are stored.
+
+* `getopt_args=...` (default is `args)
+
+  Name of the array variable to store the arguments found.
 
 
 # License and Copyright
 
-Copyright 2020-2021. Ingy döt Net <ingy@ingy.net>.
+Copyright 2020-2022. Ingy döt Net <ingy@ingy.net>.
 
 getopt-bash is released under the MIT license.
 
