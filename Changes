@@ -1,3 +1,7 @@
+[version "0.1.2"]
+date = Mon Sep  5 07:56:27 AM PDT 2022
+done = Finish implementing basic functionality and tests
+
 [version "0.1.1"]
 date = Tue 30 Aug 2022 07:30:57 AM PDT
 done = Preserve blank lines in options usage output
