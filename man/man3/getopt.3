@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "STDIN 1"
-.TH "getopt" 3 "2022-09-05" "md2man v0.1.0" "Bash Package Manager"
+.TH "getopt" 3 "2022-09-08" "md2man v0.1.0" "Bash Package Manager"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -178,14 +178,14 @@ Declarative Getopt Parser for Bash
 .Ve
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-Git has a little known, but very cool getopt parser built in. The Git command is:
+Git has a little known but very cool getopt parser built in. The Git command is:
 .PP
 .Vb 2
 \&    git rev\-parse \-\-parseopt \-\- <command\-line\-args> \e
 \&      <<<"<special\-format\-getopt\-spec\-text>"
 .Ve
 .PP
-You pipe in a special format that looks like a help text describing the command. If you ask for \f(CW\*(C`\-\-help\*(C'\fR (or the parser fails to parse the options), it actually will print a slightly reformatted version of that spec.
+You pipe in a special format that looks like a help text describing the command. If you ask for \f(CW\*(C`\-\-help\*(C'\fR (or the parser fails to parse the options), it will print a slightly reformatted version of that spec as a help message.
 .PP
 This library makes that Git parser even more powerful and easy to use.
 .SH "PARLANCE"
@@ -201,11 +201,11 @@ Arguments are the (zero or more) strings that (usually) follow the options.
 .IP "\(bu" 4
 long option
 .Sp
-An option of the form \f(CW\*(C`\-\-name\*(C'\fR. Two dashes and two or more letters in the name. An \f(CW\*(C`=\*(C'\fR or a space may be used to separate the option from its value. ie \f(CW\*(C`\-\-file=abc.txt\*(C'\fR or \f(CW\*(C`\-\-file abc.txt\*(C'\fR.
+An option of the form \f(CW\*(C`\-\-name\*(C'\fR or \f(CW\*(C`\-\-some\-thing\*(C'\fR. Two dashes and two or more letters in the name. The names should be lowercase, start with a letter and be composed of letters, numbers and dash separators. An \f(CW\*(C`=\*(C'\fR or a space may be used to separate the option from its value. ie \f(CW\*(C`\-\-file=abc.txt\*(C'\fR or \f(CW\*(C`\-\-file abc.txt\*(C'\fR.
 .IP "\(bu" 4
 short option
 .Sp
-An option of the form \f(CW\*(C`\-n\*(C'\fR. A single dash and a single character for the name. If the option has a value, it is separated by a space: \f(CW\*(C`\-f abc.txt\*(C'\fR.
+An option of the form \f(CW\*(C`\-n\*(C'\fR or \f(CW\*(C`\-F\*(C'\fR. A single dash and a single character for the name. The character may be a lower or upper cased letter. If the option has a value, it is separated by a space: \f(CW\*(C`\-f abc.txt\*(C'\fR.
 .IP "\(bu" 4
 flag option
 .Sp
@@ -218,13 +218,38 @@ Value options always have a value parameter. This getopt-bash library returns th
 dual option
 .Sp
 A dual option can be used alone like a flag option, or with a value.
+.IP "\(bu" 4
+getopt spec
+.Sp
+A multiline string that defines how getopt will behave. See \*(L"Spec Structure\*(R" below.
+.IP "\(bu" 4
+getopt config
+.Sp
+The getopt library has a number of config variables you can set to get custom behavior. These variables can be set as part of the getopt spec at the top. They can also be set using normal Bash variable assignments as well.
 .SH "USAGE"
 .IX Header "USAGE"
-The \f(CW\*(C`getopt\-bash\*(C'\fR library provides a single file \f(CW\*(C`lib/getopt.bash\*(C'\fR. If you \f(CW\*(C`source getopt.bash\*(C'\fR it provides a function called \f(CW\*(C`getopt\*(C'\fR. The \f(CW\*(C`getopt\*(C'\fR function expects a specially formatted spec string in its \s-1STDIN\s0 and the arguments you want to parse, passed in as arguments to the function.
+The \f(CW\*(C`getopt\-bash\*(C'\fR package provides a single library file \f(CW\*(C`lib/getopt.bash\*(C'\fR. If you \f(CW\*(C`source getopt.bash\*(C'\fR it provides a function called \f(CW\*(C`getopt\*(C'\fR.
 .PP
-The \f(CW\*(C`getopt\*(C'\fR function will (by default) set each option in a variable called \f(CW\*(C`option_<option\-name\*(C'\fR> and put any arguments into an array variable called \f(CW\*(C`args\*(C'\fR.
+The \f(CW\*(C`getopt\*(C'\fR function requires a getopt spec, and there are 3 ways to provide it:
+.ie n .IP "1. As the ""getopt_spec"" config variable." 4
+.el .IP "1. As the \f(CWgetopt_spec\fR config variable." 4
+.IX Item "1. As the getopt_spec config variable."
+.PD 0
+.ie n .IP "1. As an argument to ""source getopt.bash ""$spec""""." 4
+.el .IP "1. As an argument to \f(CWsource getopt.bash ``$spec''\fR." 4
+.IX Item "1. As an argument to source getopt.bash ""$spec""."
+.ie n .IP "1. As \s-1STDIN\s0 to the ""getopt"" function." 4
+.el .IP "1. As \s-1STDIN\s0 to the \f(CWgetopt\fR function." 4
+.IX Item "1. As STDIN to the getopt function."
+.PD
+.PP
+The \f(CW\*(C`getopt\*(C'\fR function takes the arguments you want to parse (usually \f(CW$@\fR) as its arguments.
+.PP
+The function will (by default) set each option in a variable called \f(CW\*(C`option_<option\-name\*(C'\fR> and put any arguments into an array variable called \f(CW\*(C`args\*(C'\fR.
 .PP
 The declared option variables will default to \f(CW\*(C`false\*(C'\fR for flag options and \f(CW\*(Aq\*(Aq\fR for value options. Actually the default for a value option is an empty array, but when used in a scalar context it will return the first value or \f(CW\*(Aq\*(Aq\fR if the array is empty.
+.PP
+Any remaining words (not options) are placed in the array variable \f(CW\*(C`args\*(C'\fR.
 .PP
 If a value option is specified multiple times, the option variable will be an array with all the values in the order they were used.
 .PP
@@ -243,9 +268,46 @@ Here's an example:
 .Ve
 .PP
 \&\s-1NOTE:\s0 Bash has a builtin \f(CW\*(C`getopt\*(C'\fR command that doesn't do nearly as much. If you need to use the builtin in combination with this library, just use this command: \f(CW\*(C`builtin getopt ...\*(C'\fR for the builtin version.
-.SS "\s-1THE GETOPT SPEC STRING FORMAT\s0"
-.IX Subsection "THE GETOPT SPEC STRING FORMAT"
-To get good at using getopt-bash you should run \f(CW\*(C`git help rev\-parse\*(C'\fR, search for \f(CW\*(C`^PARSEOPT\*(C'\fR and read that entire section. The getopt-bash function uses \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR under the hood, but does a bunch of extra pre-processing and post-processing to make things really nice and simple.
+.SS "\s-1SPEC STRUCTURE\s0"
+.IX Subsection "SPEC STRUCTURE"
+The \f(CW\*(C`getopt\*(C'\fR spec is a multiline string with 4 distinct sections:
+.IP "1. Configuration Settings" 4
+.IX Item "1. Configuration Settings"
+You can put any number of lines at the top of the spec that have the form:
+.Sp
+.Vb 1
+\&    getopt_config_var=value
+.Ve
+.Sp
+These variables can be set elsewhere or not at all. Sometimes it is nice to put them in the spec since the spec acts as an overview of how the program works.
+.IP "1. Usage Prose" 4
+.IX Item "1. Usage Prose"
+The first nonblank line(s) (after any config lines) is used as the \f(CW\*(C`usage\*(C'\fR in help or error messages. You should have one or more usage lines followed by a blank line.
+.IP "1. Documentation and Commands" 4
+.IX Item "1. Documentation and Commands"
+The next section is where you put any free form documentation about how the command works. This is also where you typically put commands/descriptions if your program supports sub-commands. Like the \f(CW\*(C`git\*(C'\fR program has commands 'git clone\f(CW\*(C`and\*(C'\fRgit checkout\f(CW\*(C`, etc. This section ends with a mandatory \*(C'\fR\-\-` line.
+.IP "1. Options Specification" 4
+.IX Item "1. Options Specification"
+Everything after the \f(CW\*(C`\-\-\*(C'\fR line is where the option parsing is defined in detail. It has its own very special format described in the next section.
+.PP
+The overall spec layout looks like:
+.PP
+.Vb 2
+\&    getopt_default=\-\-help
+\&    getopt_prefix=opt_
+\&
+\&    my\-program <opts> <args>
+\&
+\&    Description of my\-program.
+\&
+\&    Options:
+\&    \-\-
+\&    f,file=         File to use
+\&    v,verbose       More output
+.Ve
+.SS "\s-1OPTIONS SPECIFICATION\s0"
+.IX Subsection "OPTIONS SPECIFICATION"
+To get good at using getopt-bash you should run \f(CW\*(C`git help rev\-parse\*(C'\fR, search for \f(CW\*(C`^PARSEOPT\*(C'\fR and read that entire section. The getopt-bash library uses \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR under the hood, but does a bunch of extra pre-processing and post-processing to make things really nice and simple.
 .PP
 The options section of the spec has these various combinations:
 .PP
@@ -267,7 +329,7 @@ The getopt-bash library adds additional features to the spec options syntax:
 \&    size=+num       Required and must be a number
 .Ve
 .PP
-In \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR there are 4 flag characters: '* = ? !`. The getopt-bash library adds:
+In \f(CW\*(C`git rev\-parse \-\-parseopt\*(C'\fR there are 4 flag characters: \f(CW\*(C`= ? * !\*(C'\fR. The getopt-bash library adds:
 .IP "\(bu" 4
 \&\f(CW\*(C`+\*(C'\fR
 .Sp
@@ -323,17 +385,58 @@ to the beginning of your spec text.
 .PP
 The currently available option variables are:
 .IP "\(bu" 4
-\&\f(CW\*(C`getopt_default=...\*(C'\fR (default is \f(CW\*(Aq\*(Aq\fR)
+\&\f(CW\*(C`getopt_default=...\*(C'\fR (default none)
 .Sp
 If no arguments were used, then use these. Multiple default arguments can be specified as an array: \f(CW\*(C`getopt_default=(\-\-foo \-\-bar)\*(C'\fR. This option is most commonly set to \f(CW\*(C`getopt_default=\-\-help\*(C'\fR (when appropriate).
 .IP "\(bu" 4
-\&\f(CW\*(C`getopt_prefix=...\*(C'\fR (default is \f(CW\*(C`option_\*(C'\fR)
+\&\f(CW\*(C`getopt_debug=<debug\-opt\*(C'\fR> (default is \f(CW\*(C`debug\*(C'\fR)
+.Sp
+Defines which option turns on \f(CW\*(C`set \-x\*(C'\fR Bash debugging. The default is \f(CW\*(C`\-\-debug\*(C'\fR but that only works if you've defined the \f(CW\*(C`debug\*(C'\fR option in your spec. If you don't want to support this feature then just don't define \f(CW\*(C`debug\*(C'\fR or set this setting to an empty string.
+.Sp
+Note: This kind of debugging is extremely useful in tracking down hard to find problems.
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_prefix=word_\*(C'\fR (default is \f(CW\*(C`option_\*(C'\fR)
 .Sp
 The prefix for the getopt option variables where values are stored.
 .IP "\(bu" 4
-\&\f(CW\*(C`getopt_args=...\*(C'\fR (default is `args)
+\&\f(CW\*(C`getopt_args=<var\*(C'\fR> (default is \f(CW\*(C`args\*(C'\fR)
 .Sp
 Name of the array variable to store the arguments found.
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_cmds=(...)\*(C'\fR (default is none)
+.Sp
+A list (array) of (sub\-)commands that have their own options.
+.Sp
+See \*(L"Commands and Options\*(R" below.
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_cmds_find=...\*(C'\fR (default is none)
+.Sp
+This config setting lets you define all commands that go into the \f(CW\*(C`getopt_cmds\*(C'\fR list in the options spec itself.
+.Sp
+If set to \f(CW\*(C`true\*(C'\fR it will take the first word from each line in the prose section that begins with spaces.
+.Sp
+Otherwise it is considered a regular expression to be applied to each line in the prose section. When a line matches, the first capture that is a word is added to the \f(CW\*(C`getopt_cmds\*(C'\fR list.
+.IP "\(bu" 4
+\&\f(CW\*(C`getopt_cmds_spec=<func\-name\*(C'\fR> (default is none)
+.Sp
+A callback function that writes an options spec for the \f(CW$cmd\fR command to stdout.
+.SH "COMMANDS AND OPTIONS"
+.IX Header "COMMANDS AND OPTIONS"
+Some programs have their own (sub\-)commands that have their own set of options. The general usage looks like:
+.PP
+.Vb 1
+\&    $ prog <opts> <cmd> <cmd\-opts> <args>
+.Ve
+.PP
+The \f(CW\*(C`git\*(C'\fR program for instance, has dozens of commands, each with their own options. These options are separate from the git's general options that apply to all git commands.
+.PP
+The getopt.bash library supports parsing these options as well. You just need to tell \f(CW\*(C`getopt\*(C'\fR what the set of commands to look for is. You can either set the \f(CW\*(C`getopt_cmds\*(C'\fR variable to a list of commands, or use the \f(CW\*(C`getopt_cmds_find\*(C'\fR setting described above.
+.PP
+Each command needs to define its own options spec using the same spec format. The way to tell \f(CW\*(C`getopt\*(C'\fR which spec to use is to set \f(CW\*(C`getopt_cmds_spec\*(C'\fR to the name of a function that gets passed the command name and writes the appropriate spec string to stdout.
+.PP
+When \f(CW\*(C`getopt\*(C'\fR recognizes a command it puts the command name into the global variable \f(CW\*(C`getopt_cmd\*(C'\fR. Then it calls the \f(CW\*(C`getopt_cmds_spec\*(C'\fR function with that command and uses the newly returned spec to parse the remaining options.
+.PP
+For a real example of a program that has many commands with their own options, see \s-1BPAN\s0's \f(CW\*(C`bpan\*(C'\fR program. It uses \f(CW\*(C`getopt.bash\*(C'\fR to parse everything. The source code is here <https://github.com/bpan-org/bpan/blob/main/bin/bpan>.
 .SH "LICENSE AND COPYRIGHT"
 .IX Header "LICENSE AND COPYRIGHT"
 Copyright 2020\-2022. Ingy do\*:t Net ingy@ingy.net <mailto:ingy@ingy.net>.
