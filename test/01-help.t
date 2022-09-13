@@ -47,7 +47,9 @@ is "$got" "$want" \
 try getopt --xyz <<<"$spec"
 has "$got" "$want" \
   "Help output is part of error messsage"
+hasnt "$got" "Can't grep" \
+  "Output doesn't have extra grep line"
 
-done-testing 4
+done-testing 5
 
 # vim: ft=sh:
