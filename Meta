@@ -1,6 +1,6 @@
 [bpan]
 name = getopt-bash
-version = 0.1.4
+version = 0.1.5
 abstract = Declarative getopt (long) parser
 license = MIT
 copyright = 2020-2022
