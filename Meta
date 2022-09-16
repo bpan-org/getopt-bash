@@ -18,4 +18,10 @@ libera = ingy
 twitter = ingydotnet
 site = https://github.com/ingydotnet
 
+[file "bpan"]
+update = License
+update = Makefile
+update = test/00-shellcheck.t
+update = test/init
+
 # vim: ft=gitconfig:
