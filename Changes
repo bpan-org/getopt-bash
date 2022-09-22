@@ -1,3 +1,8 @@
+[version "0.1.7"]
+date = Thu Sep 22 09:05:06 AM EDT 2022
+done = Dual options default to '', not false
+done = Update BPAN assets
+
 [version "0.1.6"]
 date = Thu Sep 15 03:07:46 PM EDT 2022
 done = Remove all external deps (is-func)
