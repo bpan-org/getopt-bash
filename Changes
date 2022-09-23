@@ -1,3 +1,7 @@
+[version "0.1.8"]
+date = Fri Sep 23 01:59:20 PM EDT 2022
+done = Update to new config file schema
+
 [version "0.1.7"]
 date = Thu Sep 22 09:05:06 AM EDT 2022
 done = Dual options default to '', not false
