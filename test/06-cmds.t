@@ -33,6 +33,7 @@ this        This
 food        Food
 ...
     ;;
+
     bar) cat <<'...'
 cmd foo ...
 

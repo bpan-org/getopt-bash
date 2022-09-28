@@ -13,7 +13,16 @@ f,file=file     File
 d,dir=dir       Dir
 c,count=num     Count
 n,num=1..10     Number
+b,bool          Boolean
 "
+
+getopt
+
+is "$option_count_file" "0" \
+  "--file used 0 times"
+
+is "$option_file" "" \
+  "option_file is ''"
 
 getopt --file=test/init
 
