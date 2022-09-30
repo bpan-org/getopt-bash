@@ -17,7 +17,10 @@ b,bar       Bar bar bar
 q,quux=     Quux quux
 
 xxx         Xxx xxx
-yyy=        Yyy yyy"
+yyy=        Yyy yyy
+hide*       Hidden option
+hide-val=*  Hidden value option
+"
 
 want="\
 usage: foo <options...>
