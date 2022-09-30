@@ -1,3 +1,8 @@
+[version "0.1.11"]
+date = Fri Sep 30 08:17:03 AM PDT 2022
+done = Support commenting out spec lines with '# '
+done = Support '*' indicator for hidden option
+
 [version "0.1.10"]
 date = Wed Sep 28 09:12:18 AM PDT 2022
 done = Make sure value options default being bound
