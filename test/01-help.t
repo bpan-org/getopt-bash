@@ -16,6 +16,8 @@ Options:
 b,bar       Bar bar bar
 q,quux=     Quux quux
 
+# comment lines
+#
 xxx         Xxx xxx
 yyy=        Yyy yyy
 hide*       Hidden option

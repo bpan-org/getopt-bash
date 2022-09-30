@@ -166,6 +166,8 @@ getopt:parse-spec() {
     if [[ $line == '' ]]; then
       getopt_parseopt+=$' \n'
       continue
+    elif [[ $line == \#\ * || $line == \# ]]; then
+      continue
     fi
 
     # if 's,long...' (short,long)
