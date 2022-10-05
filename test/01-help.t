@@ -5,9 +5,11 @@ source test/init
 source getopt.bash --
 
 spec="\
+# comment line at top
 getopt_default=--help
 
 foo <options...>
+# comment line in top section
 
 See 'man foo' for more help.
 
