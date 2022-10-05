@@ -3,7 +3,7 @@ api-version = 1
 
 [package]
 name = getopt-bash
-version = 0.1.12
+	version = 0.1.13
 title = Declarative getopt (long) parser
 license = MIT
 copyright = 2020-2022
