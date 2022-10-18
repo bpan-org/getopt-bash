@@ -1,3 +1,7 @@
+[version "0.1.15"]
+date = Mon Oct 17 09:19:20 PM PDT 2022
+done = Export the getopt function
+
 [version "0.1.14"]
 date = Wed Oct  5 08:02:56 PM PDT 2022
 done = Fix .bpan/config symlink
