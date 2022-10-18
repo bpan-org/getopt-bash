@@ -1,3 +1,8 @@
+[version "0.1.16"]
+date = Tue Oct 18 10:28:41 AM PDT 2022
+done = Refactor pager code
+done = Change ReadMe.md from symlink to file
+
 [version "0.1.15"]
 date = Mon Oct 17 09:19:20 PM PDT 2022
 done = Export the getopt function
