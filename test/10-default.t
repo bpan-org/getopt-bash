@@ -26,7 +26,7 @@ is "$option_value" '' \
 is "$option_count_value" 0 \
   "unused value option count is 0"
 
-is "$option_dual" '' \
+is "${option_dual-}" '' \
   "unused dual option defaults to ''"
 
 is "$option_count_value" 0 \
