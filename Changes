@@ -1,3 +1,7 @@
+[version "0.1.17"]
+date = Tue Oct 25 05:05:45 PM PDT 2022
+done = Make tests pass in Bash versions 3.2 - 5.2
+
 [version "0.1.16"]
 date = Tue Oct 18 10:28:41 AM PDT 2022
 done = Refactor pager code
