@@ -1,3 +1,7 @@
+[version "0.1.18"]
+date = Wed Oct 26 06:47:30 AM PDT 2022
+done = Revert "Make tests pass in Bash versions 3.2 - 5.2"
+
 [version "0.1.17"]
 date = Tue Oct 25 05:17:52 PM PDT 2022
 done = Revert "Version 0.1.17"
