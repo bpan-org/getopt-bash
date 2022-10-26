@@ -17,7 +17,7 @@ is "$option_file" true \
 
 unset option_file
 getopt foo <<<"$spec"
-is "${option_file-}" '' \
+is "$option_file" '' \
   "Dual option defaults to empty string"
 
 unset option_file

@@ -12,7 +12,7 @@ getopt() {
   getopt:parse-spec "$getopt_spec"
 
   [[ $# -gt 0 ]] ||
-    set -- "${getopt_default[@]-}"
+    set -- "${getopt_default[@]}"
 
   if [[ ${#getopt_cmds[*]} -gt 0 ]]; then
     local words=()
@@ -263,7 +263,7 @@ getopt:parse-spec() {
 
 getopt:set-opts() {
   local option name var
-  local need=" ${getopt_required[*]-}"
+  local need=" ${getopt_required[*]}"
   local _name short long kind type mult
 
   option-vars() {
@@ -321,7 +321,7 @@ getopt:set-opts() {
     elif [[ $kind == dual ]]; then
       if [[ ${value-} ]]; then
         [[ $type ]] && getopt:validate
-        if ! [[ ${!var-} ]]; then
+        if ! [[ ${!var} ]]; then
           printf -v "$var" '%s' "$value"
         fi
       else
