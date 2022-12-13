@@ -1,10 +1,10 @@
 [bpan]
-version = 0.1.96
-updated = 2022-12-11-18-44-34
+version = 0.1.97
+updated = 2022-12-13-12-22-35
 
 [package]
 name = getopt-bash
-version = 0.1.21
+version = 0.1.22
 title = Declarative getopt (long) parser
 license = MIT
 copyright = 2020-2022
