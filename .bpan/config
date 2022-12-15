@@ -3,7 +3,7 @@ version = 0.1.97
 updated = 2022-12-13-12-22-35
 
 [package]
-name = getopt-bash
+id = github:bpan-org/getopt-bash
 version = 0.1.22
 title = Declarative getopt (long) parser
 license = MIT
