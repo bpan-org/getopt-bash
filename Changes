@@ -1,3 +1,8 @@
+[version "0.1.24"]
+date = 2023-01-01T13:03:27Z
+done = Update .bpan/config
+done = Version 0.1.23
+
 [version "0.1.23"]
 date = 2022-12-15T19:31:10Z
 done = Add type to .bpan/config

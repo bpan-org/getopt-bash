@@ -1,10 +1,10 @@
 [bpan]
-version = 0.1.100
-updated = 2022-12-15T19:31:11Z
+version = 0.1.106
+updated = 2023-01-01T13:03:28Z
 
 [package]
 id = github:bpan-org/getopt-bash
-version = 0.1.23
+version = 0.1.24
 title = Declarative getopt (long) parser
 license = MIT
 copyright = 2020-2023
