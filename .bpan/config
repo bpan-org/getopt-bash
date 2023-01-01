@@ -7,10 +7,9 @@ id = github:bpan-org/getopt-bash
 version = 0.1.23
 title = Declarative getopt (long) parser
 license = MIT
-copyright = 2020-2022
-type = bash-lib
+copyright = 2020-2023
+type = bash:lib
 
-bug = https://github.com/bpan-org/getopt-bash/issues/
 irc = irc.libera.chat/bpan
 
 [author "github:ingydotnet"]
